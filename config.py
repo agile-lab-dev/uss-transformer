@@ -1,0 +1,12 @@
+DBNAME = 'postgres'
+PG_HOST = 'localhost'
+PG_PORT = 5433
+PG_USER = 'postgres'
+PG_PASSWORD = 'postgres'
+MINIO_HOST = 'localhost'
+MINIO_PORT = 9000
+MINIO_USER = 'minio'
+MINIO_PASSWORD = 'password'
+TRINO_HOST = 'localhost'
+TRINO_PORT = 8080
+TRINO_USER = 'minio'
