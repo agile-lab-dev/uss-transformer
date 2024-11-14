@@ -147,38 +147,49 @@ the row position based on an order on a specific column chosen by the tool. It i
 operations when data is distributed, but in this way the user can provide an expected result for PKs in the bridge 
 tables, which is not possible using UUIDs.
 
-## Tool Execution Prerequisites
+## Example of Tool Execution
 
-- Install the python packages written in "requirements.txt".  
-- The setup function works only if there is an instance of Postgres.  
-- The "config.py" file contains the parameters for connecting to it.  
-- Do not use localhost:5432 to avoid conflicts with the dockerized instance of Postgres. 
-- Create a sql file to specify the primary and foreign keys of the schema as the following instructions:
+Open a terminal in the parent folder of the project "uss-transformer" and execute the following instructions:
 
-> PRIMARY KEY table(columns);
+1. Install python3, pip and the python packages written in "requirements.txt" 
 
-> FOREIGN KEY table(columns) REFERENCES referenced_table(referenced_columns); 
+> sudo apt install python3 python3-pip  
+> pip install -r requirements.txt
 
-- The "samples" folder contains two schema dumps useful for creating two schemas in the local postgreSQL instance to use 
-the "setup" function. Annotations for these schemas are stored in the "notes" folder.
-- In the main.py file, you can choose whether to use the setup function via the boolean variable "SETUP".  
-- In addition, you must specify the name of the schema to be transformed and the path of the file that contains the 
-annotations on the primary and foreign keys.
-- Choose if primary keys must have deterministic or indeterministic values. The tool is less efficient when 
-deterministic values are chosen. See below on how to choose this.
-- Once everything is configured, you can run the main.
-- Before to run the test to verify the correctness of the bridge table of the "loops" schema, ensure that the lines 196 
-and 258 are uncommented in the file "transformation.py" in "tools/functions" folder, and lines 197 and 259 are 
-commented out.
+2. Install PostgreSQL 14
 
-#### Uncomment to use deterministic values as primary keys (comment lines 197 and 259):
+> sudo apt install postgresql-14
 
-> at line 196: datatype = 'smallint'
+3. Open the postgres configuration file  and set up the port to 5433 instead of 5432 (at line 64)
 
-> at line 258: query += f'row_number() over (order by {list(columns.keys())[0]})'
- 
-#### Uncomment to use indeterministic values as primary keys (comment lines 196 and 258):
+> sudo gedit /etc/postgresql/14/main/postgresql.conf
 
-> at line 197: datatype = 'varbinary'
+4. Restart the postgres service
 
-> at line 259: query = 'cast(uuid() as varbinary)'
+> sudo service postgresql restart
+
+5. Set up the password equal to "postgres" for the user "postgres"
+
+> sudo -u postgres psql
+
+6. Once "postgres=#" is visible at the beginning of the line, run the following command to create the password
+
+> \password postgres
+
+After entering the password twice, exit:
+
+> \q
+
+7. Run these commands to create two sample schemas on postgres
+
+> sudo -u postgres psql postgres < samples/loops_dump.sql -q  
+> sudo -u postgres psql postgres < samples/northwind_dump.sql -q
+
+8. Run the main
+
+> python3 main.py
+
+9. Run the test
+
+> python3 test_loops.py
+
